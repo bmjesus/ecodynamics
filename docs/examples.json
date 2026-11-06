@@ -1,0 +1,1338 @@
+[
+  {
+    "slug": "population",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Human population",
+      "description": "Practical 1 · Births, deaths and exponential growth",
+      "notes": "Source: Practical 1 (2025). Initial population: 1 million. RK4 approximates the worksheet's 6 billion target; Euler with DT=10 gives about 4.994 billion. Compare both methods. Duplicate the model, change the rates to 0.0122 and 0.0093 for the French-rate scenario, or add a migration inflow for the Greek exercise. Per-capita rate units are 1/year.",
+      "settings": {
+        "start": 0,
+        "end": 2000,
+        "dt": 10,
+        "output_every": 10,
+        "method": "rk4",
+        "time_unit": "years"
+      },
+      "elements": [
+        {
+          "id": "Population",
+          "name": "Population",
+          "kind": "stock",
+          "equation": "1000000.0",
+          "x": 590,
+          "y": 270,
+          "unit": "people",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Birth_rate",
+          "name": "Birth_rate",
+          "kind": "converter",
+          "equation": "0.01435",
+          "x": 290,
+          "y": 115,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Death_rate",
+          "name": "Death_rate",
+          "kind": "converter",
+          "equation": "0.01",
+          "x": 880,
+          "y": 115,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Births",
+          "name": "Births",
+          "kind": "flow",
+          "equation": "Population*Birth_rate",
+          "x": 330,
+          "y": 270,
+          "unit": "people/year",
+          "description": "",
+          "from": null,
+          "to": "Population"
+        },
+        {
+          "id": "Deaths",
+          "name": "Deaths",
+          "kind": "flow",
+          "equation": "Population*Death_rate",
+          "x": 860,
+          "y": 270,
+          "unit": "people/year",
+          "description": "",
+          "from": "Population",
+          "to": null
+        }
+      ],
+      "links": [],
+      "groups": [],
+      "plots": [
+        {
+          "title": "Population over time",
+          "ids": [
+            "Population"
+          ],
+          "independent": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "deer",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Deer and vegetation",
+      "description": "Practical 2 · Build feedback through food limitation",
+      "notes": "Reconstructed from the construction exercise in Practical 2, pages 8–14; this is not an import of the legacy Popdynam demonstration. Explicit adaptation: Broutage is limited to Herbe/DT to prevent a negative grass stock with Euler. The worksheet's raw Broutage_par_Cerf*Cerf_pop can deplete the stock. The engine does not silently clip stocks. Keep Euler for this explicit DT-based limit; alternative depletion rules require separate validation. Lookup values outside the tabulated range are clamped to the endpoint.",
+      "settings": {
+        "start": 0,
+        "end": 20,
+        "dt": 0.05,
+        "output_every": 0.05,
+        "method": "euler",
+        "time_unit": "years"
+      },
+      "elements": [
+        {
+          "id": "Cerf_pop",
+          "name": "Cerf_pop",
+          "kind": "stock",
+          "equation": "100",
+          "x": 430,
+          "y": 240,
+          "unit": "deer",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Herbe",
+          "name": "Herbe",
+          "kind": "stock",
+          "equation": "3500",
+          "x": 840,
+          "y": 240,
+          "unit": "grass units",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Taux_natalité",
+          "name": "Taux_natalité",
+          "kind": "converter",
+          "equation": "0.2",
+          "x": 200,
+          "y": 95,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Taux_régénération",
+          "name": "Taux_régénération",
+          "kind": "converter",
+          "equation": "0.5",
+          "x": 1040,
+          "y": 95,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Broutage_par_Cerf",
+          "name": "Broutage_par_Cerf",
+          "kind": "converter",
+          "equation": "15",
+          "x": 620,
+          "y": 480,
+          "unit": "grass units/deer/year",
+          "description": ""
+        },
+        {
+          "id": "Taux_mortalité",
+          "name": "Taux_mortalité",
+          "kind": "lookup",
+          "equation": "Herbe",
+          "x": 430,
+          "y": 480,
+          "unit": "1/year",
+          "description": "",
+          "points": [
+            [
+              0,
+              1
+            ],
+            [
+              100,
+              0.815
+            ],
+            [
+              200,
+              0.61
+            ],
+            [
+              300,
+              0.48
+            ],
+            [
+              400,
+              0.36
+            ],
+            [
+              500,
+              0.255
+            ],
+            [
+              600,
+              0.165
+            ],
+            [
+              700,
+              0.11
+            ],
+            [
+              800,
+              0.055
+            ],
+            [
+              900,
+              0.03
+            ],
+            [
+              1000,
+              0.02
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "Naissance",
+          "name": "Naissance",
+          "kind": "flow",
+          "equation": "Cerf_pop*Taux_natalité",
+          "x": 210,
+          "y": 240,
+          "unit": "deer/year",
+          "description": "",
+          "from": null,
+          "to": "Cerf_pop"
+        },
+        {
+          "id": "Mortalité",
+          "name": "Mortalité",
+          "kind": "flow",
+          "equation": "Cerf_pop*Taux_mortalité",
+          "x": 430,
+          "y": 365,
+          "unit": "deer/year",
+          "description": "",
+          "from": "Cerf_pop",
+          "to": null
+        },
+        {
+          "id": "Régénération",
+          "name": "Régénération",
+          "kind": "flow",
+          "equation": "Taux_régénération*Herbe",
+          "x": 1050,
+          "y": 240,
+          "unit": "grass units/year",
+          "description": "",
+          "from": null,
+          "to": "Herbe"
+        },
+        {
+          "id": "Broutage",
+          "name": "Broutage",
+          "kind": "flow",
+          "equation": "MIN(Broutage_par_Cerf*Cerf_pop,MAX(Herbe,0)/DT)",
+          "x": 835,
+          "y": 365,
+          "unit": "grass units/year",
+          "description": "",
+          "from": "Herbe",
+          "to": null
+        }
+      ],
+      "links": [],
+      "groups": [],
+      "plots": [
+        {
+          "title": "Deer population",
+          "ids": [
+            "Cerf_pop"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Vegetation",
+          "ids": [
+            "Herbe"
+          ],
+          "independent": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "hare-lynx",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Hare–lynx",
+      "description": "Practical 3 · Perturb a predator–prey equilibrium",
+      "notes": "Source: Practical 3, English 2025 version (French 2023 version also supplied). At the initial density 50, both populations are at equilibrium. Try initial Lynx values 1150, 500, then 200. Lookup tables are transcribed from the worksheet screenshots. Endpoint clamping is an explicit prototype assumption, not a verified Stella setting. Strong perturbations with coarse Euler steps may produce negative stocks; the engine stops rather than inventing a depletion rule. Compare a smaller DT as part of the exercise.",
+      "settings": {
+        "start": 0,
+        "end": 36,
+        "dt": 1,
+        "output_every": 1,
+        "method": "euler",
+        "time_unit": "years"
+      },
+      "elements": [
+        {
+          "id": "Hare",
+          "name": "Hare",
+          "kind": "stock",
+          "equation": "50000",
+          "x": 370,
+          "y": 245,
+          "unit": "hares",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Lynx",
+          "name": "Lynx",
+          "kind": "stock",
+          "equation": "1250",
+          "x": 900,
+          "y": 245,
+          "unit": "lynxes",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Area",
+          "name": "Area",
+          "kind": "converter",
+          "equation": "1000",
+          "x": 140,
+          "y": 495,
+          "unit": "ha",
+          "description": ""
+        },
+        {
+          "id": "Hare_Birth_Rate",
+          "name": "Hare_Birth_Rate",
+          "kind": "converter",
+          "equation": "1.25",
+          "x": 140,
+          "y": 95,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Lynx_Birth_Rate",
+          "name": "Lynx_Birth_Rate",
+          "kind": "converter",
+          "equation": "0.25",
+          "x": 1115,
+          "y": 95,
+          "unit": "1/year",
+          "description": ""
+        },
+        {
+          "id": "Hare_Density",
+          "name": "Hare_Density",
+          "kind": "converter",
+          "equation": "Hare/Area",
+          "x": 370,
+          "y": 490,
+          "unit": "hares/ha",
+          "description": ""
+        },
+        {
+          "id": "Hares_Killed_by_Lynx",
+          "name": "Hares_Killed_by_Lynx",
+          "kind": "lookup",
+          "equation": "Hare_Density",
+          "x": 610,
+          "y": 490,
+          "unit": "hares/lynx/year",
+          "description": "",
+          "points": [
+            [
+              0,
+              0
+            ],
+            [
+              50,
+              50
+            ],
+            [
+              100,
+              125
+            ],
+            [
+              150,
+              252
+            ],
+            [
+              200,
+              357
+            ],
+            [
+              250,
+              435
+            ],
+            [
+              300,
+              467
+            ],
+            [
+              350,
+              495
+            ],
+            [
+              400,
+              500
+            ],
+            [
+              450,
+              500
+            ],
+            [
+              500,
+              500
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "Lynx_Mortality_Rate",
+          "name": "Lynx_Mortality_Rate",
+          "kind": "lookup",
+          "equation": "Hare_Density",
+          "x": 900,
+          "y": 490,
+          "unit": "1/year",
+          "description": "",
+          "points": [
+            [
+              0,
+              0.5
+            ],
+            [
+              10,
+              0.45
+            ],
+            [
+              20,
+              0.4
+            ],
+            [
+              30,
+              0.35
+            ],
+            [
+              40,
+              0.3
+            ],
+            [
+              50,
+              0.25
+            ],
+            [
+              60,
+              0.2
+            ],
+            [
+              70,
+              0.14999999999999997
+            ],
+            [
+              80,
+              0.09999999999999998
+            ],
+            [
+              90,
+              0.04999999999999999
+            ],
+            [
+              100,
+              0.0
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "Hare_Births",
+          "name": "Hare_Births",
+          "kind": "flow",
+          "equation": "Hare*Hare_Birth_Rate",
+          "x": 150,
+          "y": 245,
+          "unit": "hares/year",
+          "description": "",
+          "from": null,
+          "to": "Hare"
+        },
+        {
+          "id": "Hare_Mortality",
+          "name": "Hare_Mortality",
+          "kind": "flow",
+          "equation": "Lynx*Hares_Killed_by_Lynx",
+          "x": 370,
+          "y": 365,
+          "unit": "hares/year",
+          "description": "",
+          "from": "Hare",
+          "to": null
+        },
+        {
+          "id": "Lynx_Births",
+          "name": "Lynx_Births",
+          "kind": "flow",
+          "equation": "Lynx*Lynx_Birth_Rate",
+          "x": 1120,
+          "y": 245,
+          "unit": "lynxes/year",
+          "description": "",
+          "from": null,
+          "to": "Lynx"
+        },
+        {
+          "id": "Lynx_Deaths",
+          "name": "Lynx_Deaths",
+          "kind": "flow",
+          "equation": "Lynx*Lynx_Mortality_Rate",
+          "x": 900,
+          "y": 365,
+          "unit": "lynxes/year",
+          "description": "",
+          "from": "Lynx",
+          "to": null
+        }
+      ],
+      "links": [],
+      "groups": [],
+      "plots": [
+        {
+          "title": "Prey and predator",
+          "ids": [
+            "Hare",
+            "Lynx"
+          ],
+          "independent": true
+        }
+      ]
+    }
+  },
+  {
+    "slug": "erosion",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Sediment erosion",
+      "description": "Practical 4 · Thresholds and environmental forcing",
+      "notes": "Source: Practical 4 (2023). The forcing table is transcribed from the worksheet graph. Linear interpolation and endpoint clamping are explicit assumptions pending comparison with the original Stella setup. Change Tf and observe the threshold at 10 Pa. Stock depletion raises an error; it is never silently clipped.",
+      "settings": {
+        "start": 0,
+        "end": 12,
+        "dt": 0.1,
+        "output_every": 0.1,
+        "method": "euler",
+        "time_unit": "hours"
+      },
+      "elements": [
+        {
+          "id": "Sediment",
+          "name": "Sediment",
+          "kind": "stock",
+          "equation": "1000",
+          "x": 645,
+          "y": 270,
+          "unit": "kg",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Eo",
+          "name": "Eo",
+          "kind": "converter",
+          "equation": "1000",
+          "x": 950,
+          "y": 120,
+          "unit": "kg/hour",
+          "description": ""
+        },
+        {
+          "id": "Tcrit",
+          "name": "Tcrit",
+          "kind": "converter",
+          "equation": "10",
+          "x": 1100,
+          "y": 420,
+          "unit": "Pa",
+          "description": ""
+        },
+        {
+          "id": "Tf",
+          "name": "Tf",
+          "kind": "lookup",
+          "equation": "TIME",
+          "x": 330,
+          "y": 420,
+          "unit": "Pa",
+          "description": "",
+          "points": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              12
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              5,
+              15
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              7,
+              2
+            ],
+            [
+              8,
+              2
+            ],
+            [
+              9,
+              15
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              11,
+              2
+            ],
+            [
+              12,
+              2
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "Erosion",
+          "name": "Erosion",
+          "kind": "flow",
+          "equation": "IF Tf>Tcrit THEN Eo*((Tf/Tcrit)-1) ELSE 0",
+          "x": 940,
+          "y": 270,
+          "unit": "kg/hour",
+          "description": "",
+          "from": "Sediment",
+          "to": null
+        }
+      ],
+      "links": [],
+      "groups": [],
+      "plots": [
+        {
+          "title": "Remaining sediment",
+          "ids": [
+            "Sediment"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Shear stress",
+          "ids": [
+            "Tf"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Erosion flux",
+          "ids": [
+            "Erosion"
+          ],
+          "independent": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "oyster",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Pacific oyster growth",
+      "description": "Practical 5 · Food, metabolism and tissue/shell growth",
+      "notes": "Source: Practical 5 (2024) and recovered equations from Modèle croissance organisme.STM. Expected constant-input result with Euler DT=1 month: dry mass 1.467202 g, shell mass 91.210765 g after 12 steps. This matches the rounded worksheet targets. The recovered mass exponent is 0.66; the worksheet describes 2/3. Tissue gain is a signed flow, allowing weight loss. The original worksheet does not fully specify dimensional conversions for every physiological rate; 'worksheet units' deliberately preserves this uncertainty. This is an oyster energy-balance teaching model; no reserve or reproduction compartments are included.",
+      "settings": {
+        "start": 0,
+        "end": 12,
+        "dt": 1,
+        "output_every": 1,
+        "method": "euler",
+        "time_unit": "months"
+      },
+      "elements": [
+        {
+          "id": "température",
+          "name": "température",
+          "kind": "converter",
+          "equation": "12",
+          "x": 130,
+          "y": 140,
+          "unit": "°C",
+          "description": ""
+        },
+        {
+          "id": "nourriture",
+          "name": "nourriture",
+          "kind": "converter",
+          "equation": "2.5",
+          "x": 130,
+          "y": 310,
+          "unit": "mg POM/L",
+          "description": ""
+        },
+        {
+          "id": "fraction_rejetée",
+          "name": "fraction_rejetée",
+          "kind": "converter",
+          "equation": "0.5",
+          "x": 130,
+          "y": 480,
+          "unit": "fraction",
+          "description": ""
+        },
+        {
+          "id": "Filtration",
+          "name": "Filtration",
+          "kind": "converter",
+          "equation": "(0.013*(température-19)^2)*(Masse_sèche^0.66)",
+          "x": 385,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Consommation",
+          "name": "Consommation",
+          "kind": "converter",
+          "equation": "Filtration*nourriture",
+          "x": 385,
+          "y": 310,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Pseudofèces",
+          "name": "Pseudofèces",
+          "kind": "converter",
+          "equation": "fraction_rejetée*Consommation",
+          "x": 385,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "ingestion",
+          "name": "ingestion",
+          "kind": "converter",
+          "equation": "Consommation-Pseudofèces",
+          "x": 600,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Absorption",
+          "name": "Absorption",
+          "kind": "converter",
+          "equation": "ingestion*0.75",
+          "x": 800,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "RESP",
+          "name": "RESP",
+          "kind": "converter",
+          "equation": "(0.266*EXP(0.06*température))*(Masse_sèche^0.80)",
+          "x": 650,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Bilan_énergétique",
+          "name": "Bilan_énergétique",
+          "kind": "converter",
+          "equation": "Absorption-RESP",
+          "x": 900,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Masse_sèche",
+          "name": "Masse_sèche",
+          "kind": "stock",
+          "equation": "1",
+          "x": 900,
+          "y": 310,
+          "unit": "g",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Gainperte_masse_sèche",
+          "name": "Gainperte_masse_sèche",
+          "kind": "flow",
+          "equation": "Bilan_énergétique",
+          "x": 1100,
+          "y": 310,
+          "unit": "g/month",
+          "description": "",
+          "from": null,
+          "to": "Masse_sèche"
+        },
+        {
+          "id": "organique_coquille",
+          "name": "organique_coquille",
+          "kind": "converter",
+          "equation": "IF Bilan_énergétique>0 THEN Absorption*0.05 ELSE 0",
+          "x": 1020,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Coquille",
+          "name": "Coquille",
+          "kind": "stock",
+          "equation": "50",
+          "x": 1050,
+          "y": 625,
+          "unit": "g",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Gain_coquille",
+          "name": "Gain_coquille",
+          "kind": "flow",
+          "equation": "organique_coquille*100",
+          "x": 800,
+          "y": 625,
+          "unit": "g/month",
+          "description": "",
+          "from": null,
+          "to": "Coquille"
+        }
+      ],
+      "links": [],
+      "groups": [
+        {
+          "id": "Environment",
+          "name": "Environment",
+          "x": 30,
+          "y": 40,
+          "width": 190,
+          "height": 535
+        },
+        {
+          "id": "Feeding",
+          "name": "Feeding",
+          "x": 265,
+          "y": 40,
+          "width": 265,
+          "height": 535
+        },
+        {
+          "id": "Metabolism and growth",
+          "name": "Metabolism and growth",
+          "x": 555,
+          "y": 40,
+          "width": 650,
+          "height": 655
+        }
+      ],
+      "plots": [
+        {
+          "title": "Tissue and shell mass",
+          "ids": [
+            "Masse_sèche",
+            "Coquille"
+          ],
+          "independent": true
+        },
+        {
+          "title": "Absorption and respiration",
+          "ids": [
+            "Absorption",
+            "RESP"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Energy balance",
+          "ids": [
+            "Bilan_énergétique"
+          ],
+          "independent": false
+        }
+      ]
+    }
+  },
+  {
+    "slug": "oyster-seasonal",
+    "model": {
+      "format": "ecodynamics",
+      "version": 1,
+      "name": "Oyster · seasonal environment",
+      "description": "Practical 5 extension · Seasonal food, temperature and turbidity",
+      "notes": "Source: Practical 5 (2024) and recovered equations from Modèle croissance organisme.STM. Expected constant-input result with Euler DT=1 month: dry mass 1.467202 g, shell mass 91.210765 g after 12 steps. This matches the rounded worksheet targets. The recovered mass exponent is 0.66; the worksheet describes 2/3. Tissue gain is a signed flow, allowing weight loss. The original worksheet does not fully specify dimensional conversions for every physiological rate; 'worksheet units' deliberately preserves this uncertainty. This is an oyster energy-balance teaching model; no reserve or reproduction compartments are included. Seasonal extension: 13 forcing values describe months 1 to 13 (12 elapsed months). DT=0.1 and linear interpolation are explicit prototype choices. Clearance stops above 200 mg SPM/L. No claim of numerical equivalence to original seasonal Stella results.",
+      "settings": {
+        "start": 1,
+        "end": 13,
+        "dt": 0.1,
+        "output_every": 0.1,
+        "method": "euler",
+        "time_unit": "months"
+      },
+      "elements": [
+        {
+          "id": "température",
+          "name": "température",
+          "kind": "lookup",
+          "equation": "TIME",
+          "x": 130,
+          "y": 140,
+          "unit": "°C",
+          "description": "",
+          "points": [
+            [
+              1,
+              7
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              10
+            ],
+            [
+              4,
+              12
+            ],
+            [
+              5,
+              14
+            ],
+            [
+              6,
+              15
+            ],
+            [
+              7,
+              14
+            ],
+            [
+              8,
+              13
+            ],
+            [
+              9,
+              12
+            ],
+            [
+              10,
+              12
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              7
+            ],
+            [
+              13,
+              3
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "nourriture",
+          "name": "nourriture",
+          "kind": "lookup",
+          "equation": "TIME",
+          "x": 130,
+          "y": 310,
+          "unit": "mg POM/L",
+          "description": "",
+          "points": [
+            [
+              1,
+              0.5
+            ],
+            [
+              2,
+              0.5
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              8
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              6,
+              2
+            ],
+            [
+              7,
+              2
+            ],
+            [
+              8,
+              2.25
+            ],
+            [
+              9,
+              6
+            ],
+            [
+              10,
+              2.5
+            ],
+            [
+              11,
+              1.5
+            ],
+            [
+              12,
+              1.5
+            ],
+            [
+              13,
+              2
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        },
+        {
+          "id": "fraction_rejetée",
+          "name": "fraction_rejetée",
+          "kind": "converter",
+          "equation": "0.5",
+          "x": 130,
+          "y": 480,
+          "unit": "fraction",
+          "description": ""
+        },
+        {
+          "id": "Filtration",
+          "name": "Filtration",
+          "kind": "converter",
+          "equation": "IF Turbidity>200 THEN 0 ELSE (0.013*(température-19)^2)*(Masse_sèche^0.66)",
+          "x": 385,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Consommation",
+          "name": "Consommation",
+          "kind": "converter",
+          "equation": "Filtration*nourriture",
+          "x": 385,
+          "y": 310,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Pseudofèces",
+          "name": "Pseudofèces",
+          "kind": "converter",
+          "equation": "fraction_rejetée*Consommation",
+          "x": 385,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "ingestion",
+          "name": "ingestion",
+          "kind": "converter",
+          "equation": "Consommation-Pseudofèces",
+          "x": 600,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Absorption",
+          "name": "Absorption",
+          "kind": "converter",
+          "equation": "ingestion*0.75",
+          "x": 800,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "RESP",
+          "name": "RESP",
+          "kind": "converter",
+          "equation": "(0.266*EXP(0.06*température))*(Masse_sèche^0.80)",
+          "x": 650,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Bilan_énergétique",
+          "name": "Bilan_énergétique",
+          "kind": "converter",
+          "equation": "Absorption-RESP",
+          "x": 900,
+          "y": 140,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Masse_sèche",
+          "name": "Masse_sèche",
+          "kind": "stock",
+          "equation": "1",
+          "x": 900,
+          "y": 310,
+          "unit": "g",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Gainperte_masse_sèche",
+          "name": "Gainperte_masse_sèche",
+          "kind": "flow",
+          "equation": "Bilan_énergétique",
+          "x": 1100,
+          "y": 310,
+          "unit": "g/month",
+          "description": "",
+          "from": null,
+          "to": "Masse_sèche"
+        },
+        {
+          "id": "organique_coquille",
+          "name": "organique_coquille",
+          "kind": "converter",
+          "equation": "IF Bilan_énergétique>0 THEN Absorption*0.05 ELSE 0",
+          "x": 1020,
+          "y": 480,
+          "unit": "worksheet units",
+          "description": ""
+        },
+        {
+          "id": "Coquille",
+          "name": "Coquille",
+          "kind": "stock",
+          "equation": "50",
+          "x": 1050,
+          "y": 625,
+          "unit": "g",
+          "description": "",
+          "non_negative": true
+        },
+        {
+          "id": "Gain_coquille",
+          "name": "Gain_coquille",
+          "kind": "flow",
+          "equation": "organique_coquille*100",
+          "x": 800,
+          "y": 625,
+          "unit": "g/month",
+          "description": "",
+          "from": null,
+          "to": "Coquille"
+        },
+        {
+          "id": "Turbidity",
+          "name": "Turbidity",
+          "kind": "lookup",
+          "equation": "TIME",
+          "x": 130,
+          "y": 625,
+          "unit": "mg SPM/L",
+          "description": "",
+          "points": [
+            [
+              1,
+              80
+            ],
+            [
+              2,
+              100
+            ],
+            [
+              3,
+              60
+            ],
+            [
+              4,
+              50
+            ],
+            [
+              5,
+              70
+            ],
+            [
+              6,
+              60
+            ],
+            [
+              7,
+              50
+            ],
+            [
+              8,
+              80
+            ],
+            [
+              9,
+              70
+            ],
+            [
+              10,
+              110
+            ],
+            [
+              11,
+              160
+            ],
+            [
+              12,
+              250
+            ],
+            [
+              13,
+              190
+            ]
+          ],
+          "interpolation": "linear",
+          "outside": "clamp"
+        }
+      ],
+      "links": [],
+      "groups": [
+        {
+          "id": "Environment",
+          "name": "Environment",
+          "x": 30,
+          "y": 40,
+          "width": 190,
+          "height": 535
+        },
+        {
+          "id": "Feeding",
+          "name": "Feeding",
+          "x": 265,
+          "y": 40,
+          "width": 265,
+          "height": 535
+        },
+        {
+          "id": "Metabolism and growth",
+          "name": "Metabolism and growth",
+          "x": 555,
+          "y": 40,
+          "width": 650,
+          "height": 655
+        }
+      ],
+      "plots": [
+        {
+          "title": "Tissue and shell mass",
+          "ids": [
+            "Masse_sèche",
+            "Coquille"
+          ],
+          "independent": true
+        },
+        {
+          "title": "Absorption and respiration",
+          "ids": [
+            "Absorption",
+            "RESP"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Energy balance",
+          "ids": [
+            "Bilan_énergétique"
+          ],
+          "independent": false
+        },
+        {
+          "title": "Food and temperature",
+          "ids": [
+            "nourriture",
+            "température"
+          ],
+          "independent": true
+        }
+      ]
+    }
+  }
+]

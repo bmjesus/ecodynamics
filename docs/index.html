@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EcoDynamics · Modelling lab</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"><script src="runtime.js" defer></script><script src="plots.js" defer></script><script src="app.js" defer></script></head>
+<body>
+<header class="app-header">
+  <div class="brand"><span class="brand-icon">e<span>↗</span></span><div><strong>EcoDynamics</strong><small>THE MODELLING LAB</small></div><span class="version">0.2</span></div>
+  <div class="header-actions"><span class="local-badge"><i></i> Browser calculations</span><button id="open-model">Open model</button><button id="save-model">Save model <span>↗</span></button><button id="help" class="icon-button" aria-label="Help">?</button></div>
+</header>
+<div class="app-layout">
+  <aside class="library-panel">
+    <div class="panel-eyebrow">YOUR CLASSROOM</div><h2>Explore a system.</h2><p class="subtle">Start with a question.<br>Build the connections.</p>
+    <div id="examples" class="example-list"></div>
+    <button id="new-model" class="new-model">＋ Blank workspace</button>
+    <div class="library-footer"><span class="tiny-diagram">□ → ○ → □</span><p>Small models.<br>Connected ideas.</p><small>Free & open source</small></div>
+  </aside>
+  <main>
+    <section class="model-heading"><div><div class="panel-eyebrow" id="model-category">ECOLOGY IN MOTION</div><h1 id="model-name"></h1><p id="model-description"></p></div><button id="rename-model" title="Edit model title" aria-label="Edit model title">✎</button></section>
+    <div class="workspace-tabs"><nav aria-label="Workspace"><button data-tab="diagram" class="active">Diagram</button><button data-tab="equations">Equations</button><button data-tab="results">Results <span id="result-count"></span></button><button data-tab="guide">Lab notes</button></nav><span id="save-state">Ready</span></div>
+    <div class="work-grid">
+      <section class="workspace">
+        <div id="error-box" class="error-box" role="alert" hidden></div>
+        <div id="diagram-view" class="tab-view">
+          <div class="canvas-toolbar"><div id="tools"><button data-tool="select" class="active" title="Select and move">↖ <span>Select</span></button><button data-tool="stock">▣ <span>Stock</span></button><button data-tool="flow">⇢ <span>Flow</span></button><button data-tool="converter">○ <span>Variable</span></button><button data-tool="lookup">⌁ <span>Lookup</span></button><button data-tool="connector">↗ <span>Link</span></button><button data-tool="group">▢ <span>Group</span></button></div><div><button id="undo" title="Undo" aria-label="Undo">↶</button><button id="redo" title="Redo" aria-label="Redo">↷</button><button id="fit" title="Fit diagram">Fit</button></div></div>
+          <div id="canvas-wrap"><svg id="diagram" viewBox="0 0 1260 740" role="img" aria-label="Editable stock and flow model"></svg><div class="canvas-caption"><span id="tool-hint">Select an element to explore its equation. Drag to move.</span><span><i class="stock-key"></i>Stock <i class="variable-key"></i>Variable <i class="lookup-key"></i>Lookup</span></div></div>
+          <div class="model-summary"><div><strong id="stock-count">0</strong><span>stocks</span></div><div><strong id="flow-count">0</strong><span>flows</span></div><div><strong id="variable-count">0</strong><span>variables & lookups</span></div><button id="validate-model">Check model <span>✓</span></button><span id="validation-status">Equations are editable</span></div>
+        </div>
+        <div id="equations-view" class="tab-view" hidden><div class="view-heading"><div><h2>The system, written out.</h2><p>Initial values for stocks; equations for everything else.</p></div></div><div id="equation-table"></div></div>
+        <div id="results-view" class="tab-view" hidden><div class="view-heading"><div><h2>Follow the change.</h2><p id="run-summary">Run your model to see what happens.</p></div><div><button id="keep-run">Keep run</button><button id="export-csv">Export CSV</button></div></div><div id="run-list"></div><div class="result-tools"><button class="active" id="show-charts">Charts</button><button id="show-table">Data table</button><button id="sweep">Compare a parameter</button><button id="choose-series">Choose series</button></div><div id="series-picker" hidden></div><div id="charts"></div><div id="result-table" hidden></div></div>
+        <div id="guide-view" class="tab-view" hidden><div class="view-heading"><div><h2>From a diagram to an experiment.</h2><p>A few notes before you explore.</p></div></div><article id="guide"></article></div>
+      </section>
+      <aside class="inspector">
+        <div class="inspector-heading"><span class="panel-eyebrow" id="inspector-kind">MODEL ELEMENT</span><button id="delete-element" title="Delete selected element" aria-label="Delete selected element" hidden>×</button></div><div id="inspector-content"></div>
+        <section class="simulation-settings"><div class="panel-eyebrow">SIMULATION</div><div class="setting-grid"><label>Start<input id="setting-start" type="number" step="any"></label><label>End<input id="setting-end" type="number" step="any"></label><label>Time step · DT<input id="setting-dt" type="number" step="any" min="0.000000001"></label><label>Output interval<input id="setting-output_every" type="number" step="any" min="0.000000001"></label></div><label>Integration method<select id="setting-method"><option value="euler">Euler · first order</option><option value="rk4">Runge–Kutta · fourth order</option></select></label><label>Time unit<input id="setting-time_unit" type="text"></label><button id="run-model" class="run-button"><span>▶</span> Run simulation <kbd>Ctrl ↵</kbd></button><p class="settings-note">Every run uses the settings shown here.</p></section>
+      </aside>
+    </div>
+    <footer class="status-bar"><span id="status-message">Rust / WebAssembly · Calculations run in your browser</span><span id="engine-status">Connecting…</span></footer>
+  </main>
+</div>
+<input type="file" id="file-input" accept=".json,.eco.json" hidden>
+<dialog id="sweep-dialog"><form method="dialog"><div class="panel-eyebrow">PARAMETER EXPERIMENT</div><h2>Change one thing.</h2><p>Compare equally spaced values using the same model and settings.</p><label>Parameter<select id="sweep-parameter"></select></label><div class="setting-grid"><label>From<input id="sweep-start" type="number" step="any" value="1"></label><label>To<input id="sweep-end" type="number" step="any" value="3"></label></div><label>Number of runs<input id="sweep-count" type="number" value="4" min="2" max="8"></label><div class="dialog-actions"><button value="cancel">Cancel</button><button id="start-sweep" type="button" class="run-button">Run comparison</button></div></form></dialog>
+<dialog id="title-dialog"><form method="dialog"><h2>About this model</h2><label>Title<input id="title-input" required maxlength="160"></label><label>Description<input id="description-input" maxlength="400"></label><div class="dialog-actions"><button value="cancel">Cancel</button><button id="apply-title" type="button" class="run-button">Apply</button></div></form></dialog>
+<div id="toast" role="status" hidden></div>
+</body></html>
